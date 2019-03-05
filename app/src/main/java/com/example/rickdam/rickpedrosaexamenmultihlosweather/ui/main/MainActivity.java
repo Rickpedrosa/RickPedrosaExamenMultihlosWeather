@@ -2,11 +2,11 @@ package com.example.rickdam.rickpedrosaexamenmultihlosweather.ui.main;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -40,35 +40,16 @@ public class MainActivity extends AppCompatActivity {
         viewModel.observeSearchToggler().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
-                if (!txtCiudad.getText().toString().equals("")) {
-                    setWeatherValues(txtCiudad.getText().toString(), aBoolean);
+                if (aBoolean) {
+                    setWeatherValues(txtCiudad.getText().toString());
                 }
-//                else {
-//                    Event<Toast> toast = new Event<>(Toast.makeText(MainActivity.this, "Introduce una localidad", Toast.LENGTH_SHORT));
-//                    toast.getContentIfNotHandled().show();
-//                    toast.hasBeenHandled();
-//                }
-                //viewModel.stopSearch();
+                viewModel.stopSearch();
             }
         });
         search();
     }
 
     private void setupViews() {
-        TextView lblCiudad = ActivityCompat.requireViewById(this, R.id.lbl_ciudad);
-        TextView lblTemp = ActivityCompat.requireViewById(this, R.id.lbl_temperatura);
-        TextView lblMinTemp = ActivityCompat.requireViewById(this, R.id.lbl_tempMin);
-        TextView lblMaxTemp = ActivityCompat.requireViewById(this, R.id.lbl_tempMax);
-        TextView lblMediaTemp = ActivityCompat.requireViewById(this, R.id.lbl_tempMedia);
-        TextView lblLluvia = ActivityCompat.requireViewById(this, R.id.lbl_lluvia);
-        TextView lblHumedad = ActivityCompat.requireViewById(this, R.id.lbl_humedad);
-        TextView lblViento = ActivityCompat.requireViewById(this, R.id.lbl_viento);
-        TextView lblVientoVelocidad = ActivityCompat.requireViewById(this, R.id.lbl_velocidad);
-        TextView lblVientoDireccion = ActivityCompat.requireViewById(this, R.id.lbl_direccionViento);
-        TextView lblNubosidad = ActivityCompat.requireViewById(this, R.id.lbl_nubosidad);
-        TextView lblAmanecer = ActivityCompat.requireViewById(this, R.id.lbl_amanecer);
-        TextView lblAtardecer = ActivityCompat.requireViewById(this, R.id.lbl_atardecer);
-
         lbl_valorTiempo = ActivityCompat.requireViewById(this, R.id.lbl_valorTiempoActual);
         lbl_valorCiudad = ActivityCompat.requireViewById(this, R.id.lbl_valorCiudad);
         lbl_valorMinTemp = ActivityCompat.requireViewById(this, R.id.lbl_valorTempMin);
@@ -87,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         searchFab = ActivityCompat.requireViewById(this, R.id.fab_search);
     }
 
-    private void setWeatherValues(final String city, Boolean bol) {
+    private void setWeatherValues(String city) {
         viewModel.observeWeather(city).observe(this, new Observer<CustomWeather>() {
             @Override
             public void onChanged(CustomWeather c) {
@@ -109,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 if (c.getWeather_description().length() == 0) {
                     Snackbar.make(lbl_valorAmanecer, "Error en la carga de datos", Snackbar.LENGTH_SHORT).show();
                 } else if (c.getWeather_description().equals("-")) {
-                    Snackbar.make(lbl_valorAmanecer, "No se encontraron datos para " + city, Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(lbl_valorAmanecer, "No hay datos para la ciudad consultada", Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
@@ -119,8 +100,13 @@ public class MainActivity extends AppCompatActivity {
         searchFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                viewModel.stopSearch();
-                viewModel.toggleSearch();
+                if (!TextUtils.isEmpty(txtCiudad.getText().toString())) {
+                    viewModel.toggleSearch();
+                } else {
+                    Event<Toast> toast = new Event<>(Toast.makeText(MainActivity.this, "Introduce una localidad", Toast.LENGTH_SHORT));
+                    toast.getContentIfNotHandled().show();
+                    toast.hasBeenHandled();
+                }
             }
         });
     }
