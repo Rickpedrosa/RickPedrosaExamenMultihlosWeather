@@ -2,12 +2,9 @@ package com.example.rickdam.rickpedrosaexamenmultihlosweather.ui.main;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import android.os.Bundle;
 import android.view.View;
@@ -17,15 +14,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.rickdam.rickpedrosaexamenmultihlosweather.R;
-import com.example.rickdam.rickpedrosaexamenmultihlosweather.data.entity.WeatherResponse;
 import com.example.rickdam.rickpedrosaexamenmultihlosweather.data.model.CustomWeather;
-import com.example.rickdam.rickpedrosaexamenmultihlosweather.data.remote.WeatherMapService;
+import com.example.rickdam.rickpedrosaexamenmultihlosweather.utils.Event;
 import com.example.rickdam.rickpedrosaexamenmultihlosweather.utils.TimeUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,6 +37,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         viewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         setupViews();
+        viewModel.observeSearchToggler().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (!txtCiudad.getText().toString().equals("")) {
+                    setWeatherValues(txtCiudad.getText().toString(), aBoolean);
+                }
+//                else {
+//                    Event<Toast> toast = new Event<>(Toast.makeText(MainActivity.this, "Introduce una localidad", Toast.LENGTH_SHORT));
+//                    toast.getContentIfNotHandled().show();
+//                    toast.hasBeenHandled();
+//                }
+                //viewModel.stopSearch();
+            }
+        });
         search();
     }
 
@@ -79,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         searchFab = ActivityCompat.requireViewById(this, R.id.fab_search);
     }
 
-    private void setWeatherValues(String city) {
+    private void setWeatherValues(final String city, Boolean bol) {
         viewModel.observeWeather(city).observe(this, new Observer<CustomWeather>() {
             @Override
             public void onChanged(CustomWeather c) {
@@ -93,10 +101,16 @@ public class MainActivity extends AppCompatActivity {
                 lbl_valorVelocidad.setText(c.getWindSpeed());
                 lbl_valorDireccion.setText(c.getWindDegrees());
                 lbl_valorNubosidad.setText(c.getCloudAll());
-                lbl_valorAmanecer.setText(TimeUtils.getDateCurrentTimeZone(Long.parseLong(c.getSunset())));
-                lbl_valorAtardecer.setText(TimeUtils.getDateCurrentTimeZone(Long.parseLong(c.getDawn())));
+                lbl_valorAmanecer.setText(TimeUtils.getDateCurrentTimeZone(Long.parseLong(c.getDawn())));
+                lbl_valorAtardecer.setText(TimeUtils.getDateCurrentTimeZone(Long.parseLong(c.getSunset())));
                 Picasso.with(tempLogo.getContext()).load(c.getLogo())
                         .resize(240, 240).into(tempLogo);
+
+                if (c.getWeather_description().length() == 0) {
+                    Snackbar.make(lbl_valorAmanecer, "Error en la carga de datos", Snackbar.LENGTH_SHORT).show();
+                } else if (c.getWeather_description().equals("-")) {
+                    Snackbar.make(lbl_valorAmanecer, "No se encontraron datos para " + city, Snackbar.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -105,9 +119,8 @@ public class MainActivity extends AppCompatActivity {
         searchFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO Poner a true el livedata de trigger, si está en true usar setWeatherValues
-                //TODO y capturar el contenido del edittext
-                setWeatherValues(txtCiudad.getText().toString());
+//                viewModel.stopSearch();
+                viewModel.toggleSearch();
             }
         });
     }

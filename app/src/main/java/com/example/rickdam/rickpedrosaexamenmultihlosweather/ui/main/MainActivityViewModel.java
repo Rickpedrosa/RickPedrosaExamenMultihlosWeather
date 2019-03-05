@@ -23,7 +23,8 @@ class MainActivityViewModel extends ViewModel {
     private void callWeatherApi(String city) {
         //TODO Notifications
         Map<String, String> params = new HashMap<>();
-        params.put("appid", "a51cf9d9a1c078b1830823a5cefb823e");
+        String apiKey = "02f7e06f18094f01937b2d887b02e9f5";
+        params.put("appid", apiKey);
         params.put("q", city);
         params.put("units", "metric");
         params.put("lang", "sp");
@@ -31,9 +32,6 @@ class MainActivityViewModel extends ViewModel {
         Call<WeatherResponse> call = WeatherMapService.getInstance().getWeatherMap()
                 .getCurrentWeatherv2(params);
         //noinspection NullableProblems
-        if (searchTrigger.getValue()) {
-
-        }
         call.enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
@@ -62,16 +60,34 @@ class MainActivityViewModel extends ViewModel {
                     CustomWeather customWeather =
                             new CustomWeather("Localidad no encontrada", "-", "-", "-",
                                     "-", "-", "-", "-", "-",
-                                    "-", "-", "-", "-");
+                                    "-", "-", "0", "0");
                     weather.postValue(customWeather);
                 }
             }
 
             @Override
             public void onFailure(Call<WeatherResponse> call, Throwable t) {
-                //TODO Fail notification (snackbar)
+                CustomWeather customWeather =
+                        new CustomWeather("", "", "-", "-",
+                                "-", "-", "-", "-", "-",
+                                "-", "-", "0", "0");
+                weather.postValue(customWeather);
             }
         });
+
+
+    }
+
+    void toggleSearch() {
+        searchTrigger.postValue(true);
+    }
+
+    void stopSearch() {
+        searchTrigger.postValue(false);
+    }
+
+    MutableLiveData<Boolean> observeSearchToggler() {
+        return searchTrigger;
     }
 
     LiveData<CustomWeather> observeWeather(String city) {
