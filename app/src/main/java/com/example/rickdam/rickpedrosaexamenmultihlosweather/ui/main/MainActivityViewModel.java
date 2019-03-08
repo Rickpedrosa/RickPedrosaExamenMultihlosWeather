@@ -17,11 +17,12 @@ import retrofit2.Response;
 
 class MainActivityViewModel extends ViewModel {
 
-    private MutableLiveData<Boolean> searchTrigger = new MutableLiveData<>();
-    private MutableLiveData<CustomWeather> weather = new MutableLiveData<>();
+    private MutableLiveData<Boolean> searchTrigger;
+    private MutableLiveData<Boolean> loading;
+    private MutableLiveData<CustomWeather> weather;
 
-    private void callWeatherApi(String city) {
-        //TODO Notifications
+    void callWeatherApi(String city) {
+        loading.postValue(true);
         Map<String, String> params = new HashMap<>();
         String apiKey = "02f7e06f18094f01937b2d887b02e9f5";
         params.put("appid", apiKey);
@@ -56,12 +57,14 @@ class MainActivityViewModel extends ViewModel {
                                     logo, rain, sunset, dawn);
 
                     weather.postValue(customWeather);
+                    loading.postValue(false);
                 } else if (response.body() == null) {
                     CustomWeather customWeather =
                             new CustomWeather("Localidad no encontrada", "-", "-", "-",
                                     "-", "-", "-", "-", "-",
                                     "-", "-", "0", "0");
                     weather.postValue(customWeather);
+                    loading.postValue(false);
                 }
             }
 
@@ -72,6 +75,7 @@ class MainActivityViewModel extends ViewModel {
                                 "-", "-", "-", "-", "-",
                                 "-", "-", "0", "0");
                 weather.postValue(customWeather);
+                loading.postValue(false);
             }
         });
 
@@ -82,16 +86,25 @@ class MainActivityViewModel extends ViewModel {
         searchTrigger.postValue(true);
     }
 
-    void stopSearch() {
-        searchTrigger.postValue(false);
-    }
 
-    MutableLiveData<Boolean> observeSearchToggler() {
+    MutableLiveData<Boolean> observeSearchToggling() {
+        if (searchTrigger == null) {
+            searchTrigger = new MutableLiveData<>();
+        }
         return searchTrigger;
     }
 
-    LiveData<CustomWeather> observeWeather(String city) {
-        callWeatherApi(city);
+    LiveData<Boolean> observeLoading(){
+        if(loading == null){
+            loading = new MutableLiveData<>();
+        }
+        return loading;
+    }
+
+    LiveData<CustomWeather> observeWeather() {
+        if (weather == null) {
+            weather = new MutableLiveData<>();
+        }
         return weather;
     }
 
