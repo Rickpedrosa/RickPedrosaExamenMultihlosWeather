@@ -21,14 +21,14 @@ public class CustomWeather {
                          String cloudAll, String logo, String rain, String sunset, String dawn) {
         this.city_name = city_name;
         this.weather_description = weather_description;
-        this.tempMin = tempMin;
-        this.tempMax = tempMax;
-        this.tempMedia = tempMedia;
-        this.windSpeed = windSpeed;
-        this.windDegrees = windDegrees;
-        this.humidity = humidity;
-        this.cloudAll = cloudAll;
-        this.logo = logo;
+        this.tempMin = tempMin.concat("ºC");
+        this.tempMax = tempMax.concat("ºC");
+        this.tempMedia = tempMedia.concat("ºC");
+        this.windSpeed = windSpeed.concat("mps");
+        this.windDegrees = windDegrees.concat("º");
+        this.humidity = humidity.concat("%");
+        this.cloudAll = cloudAll.concat("%");
+        this.logo = "http://openweathermap.org/img/w/".concat(logo).concat(".png");
         this.rain = rain;
         this.sunset = sunset;
         this.dawn = dawn;

@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">Ricknardo\'s Weather</string>
+    <string name="lblCiudad">Ciudad</string>
+    <string name="temperatura">Temperatura:</string>
+    <string name="min">min</string>
+    <string name="max">max</string>
+    <string name="media">media</string>
+    <string name="humedad">Humedad:</string>
+    <string name="lluvia">Lluvia:</string>
+    <string name="viento">Viento:</string>
+    <string name="velocidad">velocidad</string>
+    <string name="direccion">dirección</string>
+    <string name="nubosidad">Nubosidad:</string>
+    <string name="amanecer">Amanecer:</string>
+    <string name="atardecer">Atardecer:</string>
+    <string name="img_icon_weather">img_icon_weather</string>
+    <string name="empty_snack_value">Introduce una localidad</string>
+    <string name="fail_snack_value">Error en la petición</string>
+    <string name="nodata_snack_value">Localidad no existente</string>
 </resources>

@@ -4,8 +4,17 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class WeatherMapService {
+
     private static WeatherMapService INSTANCE;
     private final WeatherMap weatherMap;
+
+    public static final String apiKey = "02f7e06f18094f01937b2d887b02e9f5";
+    public static final String apiSyntax = "appid";
+    public static final String citySyntax = "q";
+    public static final String unitsSyntax = "units";
+    public static final String units = "metric";
+    public static final String langSyntax = "lang";
+    public static final String lang = "sp";
 
     public static WeatherMapService getInstance() {
         if (INSTANCE == null) {
