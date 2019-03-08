@@ -46,8 +46,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!TextUtils.isEmpty(b.txtCiudad.getText().toString())) {
-                    viewModel.setSnackBarEvent(b.lblValorAmanecer);
-                    viewModel.callWeatherApi(b.txtCiudad.getText().toString(), MainActivity.this);
+                    viewModel.callWeatherApi(b.txtCiudad.getText().toString(), b.lblValorAmanecer);
                     viewModel.toggleSearch();
                 } else {
                     Event<Snackbar> snackBarEvent = new Event<>
@@ -79,16 +78,6 @@ public class MainActivity extends AppCompatActivity {
                         b.lblValorAtardecer.setText(TimeUtils.getDateCurrentTimeZone(Long.parseLong(c.getSunset())));
                         Picasso.with(b.imgValorTiempoIcono.getContext()).load(c.getLogo())
                                 .resize(240, 240).into(b.imgValorTiempoIcono);
-
-                        if (c.getWeather_description().length() == 0) {
-                            if (!viewModel.getSnackBarEvent().hasBeenHandled()) {
-                                viewModel.getSnackBarEvent().getContentIfNotHandled().setText(getString(R.string.fail_snack_value)).show();
-                            }
-                        } else if (c.getWeather_description().equals("-")) {
-                            if (!viewModel.getSnackBarEvent().hasBeenHandled()) {
-                                viewModel.getSnackBarEvent().getContentIfNotHandled().setText(getString(R.string.nodata_snack_value)).show();
-                            }
-                        }
                     }
                 });
             }
@@ -106,6 +95,15 @@ public class MainActivity extends AppCompatActivity {
                 notificationManagerCompat = NotificationManagerCompat.from(MainActivity.this);
                 if (!notificationEvent.hasBeenHandled()) {
                     notificationManagerCompat.notify(1, notificationEvent.getContentIfNotHandled());
+                }
+            }
+        });
+
+        viewModel.getSnackBarEvent().observe(this, new Observer<Event<Snackbar>>() {
+            @Override
+            public void onChanged(Event<Snackbar> snackBarEvent) {
+                if (!snackBarEvent.hasBeenHandled()) {
+                    snackBarEvent.getContentIfNotHandled().show();
                 }
             }
         });

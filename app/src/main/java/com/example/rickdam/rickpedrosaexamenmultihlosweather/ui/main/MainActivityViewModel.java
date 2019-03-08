@@ -1,7 +1,6 @@
 package com.example.rickdam.rickpedrosaexamenmultihlosweather.ui.main;
 
 import android.app.Notification;
-import android.content.Context;
 import android.view.View;
 
 import com.example.rickdam.rickpedrosaexamenmultihlosweather.R;
@@ -28,10 +27,10 @@ class MainActivityViewModel extends ViewModel {
     private MutableLiveData<Boolean> searchTrigger = new MutableLiveData<>();
     private MutableLiveData<Boolean> loading = new MutableLiveData<>();
     private MutableLiveData<CustomWeather> weather = new MutableLiveData<>();
-    private Event<Snackbar> snackBarEvent;
+    private MutableLiveData<Event<Snackbar>> snackBarEvent = new MutableLiveData<>();
     private MutableLiveData<Event<Notification>> notificationEvent = new MutableLiveData<>();
 
-    void callWeatherApi(String city, final Context context) {
+    void callWeatherApi(String city, final View view) {
         loading.postValue(true);
         Map<String, String> params = new HashMap<>();
         params.put(WeatherMapService.apiSyntax, WeatherMapService.apiKey);
@@ -67,7 +66,7 @@ class MainActivityViewModel extends ViewModel {
 
                     weather.postValue(customWeather);
                     loading.postValue(false);
-                    notificationEvent.postValue(new Event<>(new NotificationCompat.Builder(context, MainActivity.CHANNEL_ID)
+                    notificationEvent.postValue(new Event<>(new NotificationCompat.Builder(view.getContext(), MainActivity.CHANNEL_ID)
                             .setSmallIcon(R.drawable.ic_search_white_24dp)
                             .setContentTitle(city_name)
                             .setContentText(weather_description.toUpperCase())
@@ -79,6 +78,8 @@ class MainActivityViewModel extends ViewModel {
                                     "-", "-", "0", "0");
                     weather.postValue(customWeather);
                     loading.postValue(false);
+                    snackBarEvent.postValue(new Event<>(
+                            Snackbar.make(view.getRootView(), R.string.nodata_snack_value, Snackbar.LENGTH_SHORT)));
                 }
             }
 
@@ -90,6 +91,8 @@ class MainActivityViewModel extends ViewModel {
                                 "-", "-", "0", "0");
                 weather.postValue(customWeather);
                 loading.postValue(false);
+                snackBarEvent.postValue(new Event<>(
+                        Snackbar.make(view.getRootView(), R.string.fail_snack_value, Snackbar.LENGTH_SHORT)));
             }
         });
 
@@ -113,15 +116,11 @@ class MainActivityViewModel extends ViewModel {
         return weather;
     }
 
-    void setSnackBarEvent(View view) {
-        snackBarEvent = new Event<>(Snackbar.make(view, "", Snackbar.LENGTH_SHORT));
-    }
-
-    Event<Snackbar> getSnackBarEvent() {
-        return snackBarEvent;
-    }
-
     LiveData<Event<Notification>> getNotificationEvent() {
         return notificationEvent;
+    }
+
+    LiveData<Event<Snackbar>> getSnackBarEvent() {
+        return snackBarEvent;
     }
 }
