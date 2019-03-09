@@ -8,13 +8,13 @@ public class WeatherMapService {
     private static WeatherMapService INSTANCE;
     private final WeatherMap weatherMap;
 
-    public static final String apiKey = "02f7e06f18094f01937b2d887b02e9f5";
-    public static final String apiSyntax = "appid";
-    public static final String citySyntax = "q";
-    public static final String unitsSyntax = "units";
-    public static final String units = "metric";
-    public static final String langSyntax = "lang";
-    public static final String lang = "sp";
+    public static final String API_KEY = "02f7e06f18094f01937b2d887b02e9f5";
+    public static final String API_SYNTAX = "appid";
+    public static final String CITY_SYNTAX = "q";
+    public static final String UNITS_SYNTAX = "units";
+    public static final String UNITS = "metric";
+    public static final String LANG_SYNTAX = "lang";
+    public static final String LANG = "sp";
 
     public static WeatherMapService getInstance() {
         if (INSTANCE == null) {

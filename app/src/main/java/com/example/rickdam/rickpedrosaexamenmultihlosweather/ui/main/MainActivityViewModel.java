@@ -33,10 +33,10 @@ class MainActivityViewModel extends ViewModel {
     void callWeatherApi(String city, final View view) {
         loading.postValue(true);
         Map<String, String> params = new HashMap<>();
-        params.put(WeatherMapService.apiSyntax, WeatherMapService.apiKey);
-        params.put(WeatherMapService.citySyntax, city);
-        params.put(WeatherMapService.unitsSyntax, WeatherMapService.units);
-        params.put(WeatherMapService.langSyntax, WeatherMapService.lang);
+        params.put(WeatherMapService.API_SYNTAX, WeatherMapService.API_KEY);
+        params.put(WeatherMapService.CITY_SYNTAX, city);
+        params.put(WeatherMapService.UNITS_SYNTAX, WeatherMapService.UNITS);
+        params.put(WeatherMapService.LANG_SYNTAX, WeatherMapService.LANG);
 
         Call<WeatherResponse> call = WeatherMapService.getInstance().getWeatherMap()
                 .getCurrentWeatherv2(params);
@@ -45,7 +45,6 @@ class MainActivityViewModel extends ViewModel {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-
                     String city_name = response.body().getName().concat(", ").concat(response.body().getSys().getCountry());
                     String weather_description = response.body().getWeather().get(0).getDescription();
                     String tempMin = String.valueOf(response.body().getMain().getTempMin());
@@ -73,7 +72,8 @@ class MainActivityViewModel extends ViewModel {
                             .build()));
                 } else if (response.body() == null) {
                     CustomWeather customWeather =
-                            new CustomWeather("Localidad no encontrada", "-", "-", "-",
+                            new CustomWeather(view.getContext().getResources().getString(R.string.nodata_snack_value),
+                                    "-", "-", "-",
                                     "-", "-", "-", "-", "-",
                                     "-", "-", "0", "0");
                     weather.postValue(customWeather);
@@ -92,7 +92,7 @@ class MainActivityViewModel extends ViewModel {
                 weather.postValue(customWeather);
                 loading.postValue(false);
                 snackBarEvent.postValue(new Event<>(
-                        Snackbar.make(view.getRootView(), R.string.fail_snack_value, Snackbar.LENGTH_SHORT)));
+                        Snackbar.make(view.getRootView(), t.getMessage(), Snackbar.LENGTH_SHORT)));
             }
         });
 
@@ -102,7 +102,6 @@ class MainActivityViewModel extends ViewModel {
     void toggleSearch() {
         searchTrigger.postValue(true);
     }
-
 
     MutableLiveData<Boolean> observeSearchToggling() {
         return searchTrigger;

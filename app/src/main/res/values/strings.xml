@@ -15,6 +15,6 @@
     <string name="atardecer">Atardecer:</string>
     <string name="img_icon_weather">img_icon_weather</string>
     <string name="empty_snack_value">Introduce una localidad</string>
-    <string name="fail_snack_value">Error en la petición</string>
-    <string name="nodata_snack_value">Localidad no existente</string>
+    <string name="fail_snack_value">Error en la petición - </string>
+    <string name="nodata_snack_value">Localidad no encontrada</string>
 </resources>

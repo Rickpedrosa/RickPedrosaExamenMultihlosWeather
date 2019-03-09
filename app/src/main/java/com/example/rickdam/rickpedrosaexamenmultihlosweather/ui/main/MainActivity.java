@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupViews() {
+        notificationManagerCompat = NotificationManagerCompat.from(MainActivity.this);
         b.progressBar.setVisibility(View.INVISIBLE);
     }
 
@@ -92,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getNotificationEvent().observe(this, new Observer<Event<Notification>>() {
             @Override
             public void onChanged(Event<Notification> notificationEvent) {
-                notificationManagerCompat = NotificationManagerCompat.from(MainActivity.this);
                 if (!notificationEvent.hasBeenHandled()) {
                     notificationManagerCompat.notify(1, notificationEvent.getContentIfNotHandled());
                 }
