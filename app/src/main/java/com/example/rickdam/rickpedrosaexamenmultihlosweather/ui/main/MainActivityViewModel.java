@@ -6,7 +6,7 @@ import android.view.View;
 import com.example.rickdam.rickpedrosaexamenmultihlosweather.R;
 import com.example.rickdam.rickpedrosaexamenmultihlosweather.data.entity.WeatherResponse;
 import com.example.rickdam.rickpedrosaexamenmultihlosweather.data.model.CustomWeather;
-import com.example.rickdam.rickpedrosaexamenmultihlosweather.data.remote.WeatherMapService;
+import com.example.rickdam.rickpedrosaexamenmultihlosweather.data.Repository;
 import com.example.rickdam.rickpedrosaexamenmultihlosweather.utils.Event;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -24,21 +24,23 @@ import retrofit2.Response;
 
 class MainActivityViewModel extends ViewModel {
 
-    private MutableLiveData<Boolean> searchTrigger = new MutableLiveData<>();
     private MutableLiveData<Boolean> loading = new MutableLiveData<>();
     private MutableLiveData<CustomWeather> weather = new MutableLiveData<>();
     private MutableLiveData<Event<Snackbar>> snackBarEvent = new MutableLiveData<>();
     private MutableLiveData<Event<Notification>> notificationEvent = new MutableLiveData<>();
+    private CustomWeather customWeather = new CustomWeather("", "", "-", "-",
+            "-", "-", "-", "-", "-",
+            "-", "-", "0", "0");
 
     void callWeatherApi(String city, final View view) {
         loading.postValue(true);
         Map<String, String> params = new HashMap<>();
-        params.put(WeatherMapService.API_SYNTAX, WeatherMapService.API_KEY);
-        params.put(WeatherMapService.CITY_SYNTAX, city);
-        params.put(WeatherMapService.UNITS_SYNTAX, WeatherMapService.UNITS);
-        params.put(WeatherMapService.LANG_SYNTAX, WeatherMapService.LANG);
+        params.put(Repository.API_SYNTAX, Repository.API_KEY);
+        params.put(Repository.CITY_SYNTAX, city);
+        params.put(Repository.UNITS_SYNTAX, Repository.UNITS);
+        params.put(Repository.LANG_SYNTAX, Repository.LANG);
 
-        Call<WeatherResponse> call = WeatherMapService.getInstance().getWeatherMap()
+        Call<WeatherResponse> call = Repository.getInstance().getWeatherMapService()
                 .getCurrentWeatherv2(params);
         //noinspection NullableProblems
         call.enqueue(new Callback<WeatherResponse>() {
@@ -58,20 +60,21 @@ class MainActivityViewModel extends ViewModel {
                     String rain = response.body().getRain() == null ? "-" : "Sí";
                     String sunset = response.body().getSys().getSunset().toString();
                     String dawn = response.body().getSys().getSunrise().toString();
-                    CustomWeather customWeather =
+                    customWeather =
                             new CustomWeather(city_name, weather_description, tempMin, tempMax,
                                     tempMedia, windSpeed, windDegrees, humidity, cloudAll,
                                     logo, rain, sunset, dawn);
 
                     weather.postValue(customWeather);
                     loading.postValue(false);
-                    notificationEvent.postValue(new Event<>(new NotificationCompat.Builder(view.getContext(), MainActivity.CHANNEL_ID)
+                    notificationEvent.postValue(new Event<>(new NotificationCompat.
+                            Builder(view.getContext(), MainActivity.CHANNEL_ID)
                             .setSmallIcon(R.drawable.ic_search_white_24dp)
                             .setContentTitle(city_name)
                             .setContentText(weather_description.toUpperCase())
                             .build()));
                 } else if (response.body() == null) {
-                    CustomWeather customWeather =
+                    customWeather =
                             new CustomWeather(view.getContext().getResources().getString(R.string.nodata_snack_value),
                                     "-", "-", "-",
                                     "-", "-", "-", "-", "-",
@@ -85,10 +88,6 @@ class MainActivityViewModel extends ViewModel {
 
             @Override
             public void onFailure(Call<WeatherResponse> call, Throwable t) {
-                CustomWeather customWeather =
-                        new CustomWeather("", "", "-", "-",
-                                "-", "-", "-", "-", "-",
-                                "-", "-", "0", "0");
                 weather.postValue(customWeather);
                 loading.postValue(false);
                 snackBarEvent.postValue(new Event<>(
@@ -97,14 +96,6 @@ class MainActivityViewModel extends ViewModel {
         });
 
 
-    }
-
-    void toggleSearch() {
-        searchTrigger.postValue(true);
-    }
-
-    MutableLiveData<Boolean> observeSearchToggling() {
-        return searchTrigger;
     }
 
     LiveData<Boolean> observeLoading() {
