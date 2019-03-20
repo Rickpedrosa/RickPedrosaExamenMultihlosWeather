@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         b.lblValorAmanecer.setText(TimeUtils.getDateCurrentTimeZone(Long.parseLong(c.getDawn())));
         b.lblValorAtardecer.setText(TimeUtils.getDateCurrentTimeZone(Long.parseLong(c.getSunset())));
         Picasso.with(b.imgValorTiempoIcono.getContext()).load(c.getLogo())
-                .resize(240, 240).into(b.imgValorTiempoIcono);
+                .resize(getResources().getInteger(R.integer.iconApiSize),
+                        getResources().getInteger(R.integer.iconApiSize)).into(b.imgValorTiempoIcono);
     }
 }

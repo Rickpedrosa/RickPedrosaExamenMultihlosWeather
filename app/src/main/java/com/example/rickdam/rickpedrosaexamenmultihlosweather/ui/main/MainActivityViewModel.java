@@ -88,9 +88,6 @@ class MainActivityViewModel extends ViewModel {
 
             @Override
             public void onFailure(Call<WeatherResponse> call, Throwable t) {
-                customWeather = new CustomWeather("", t.getMessage(), "-", "-",
-                        "-", "-", "-", "-", "-",
-                        "-", "-", "0", "0");
                 weather.postValue(customWeather);
                 loading.postValue(false);
                 snackBarEvent.postValue(new Event<>(
