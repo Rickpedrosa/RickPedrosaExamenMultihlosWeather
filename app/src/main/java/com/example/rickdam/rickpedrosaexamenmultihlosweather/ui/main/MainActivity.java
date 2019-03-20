@@ -8,11 +8,13 @@ import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 
 import com.example.rickdam.rickpedrosaexamenmultihlosweather.R;
 import com.example.rickdam.rickpedrosaexamenmultihlosweather.data.model.CustomWeather;
 import com.example.rickdam.rickpedrosaexamenmultihlosweather.databinding.ActivityMainBinding;
 import com.example.rickdam.rickpedrosaexamenmultihlosweather.utils.Event;
+import com.example.rickdam.rickpedrosaexamenmultihlosweather.utils.KeyboardUtils;
 import com.example.rickdam.rickpedrosaexamenmultihlosweather.utils.TimeUtils;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
@@ -38,13 +40,20 @@ public class MainActivity extends AppCompatActivity {
     private void setupViews() {
         notificationManagerCompat = NotificationManagerCompat.from(MainActivity.this);
         b.progressBar.setVisibility(View.INVISIBLE);
+        b.txtCiudad.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                KeyboardUtils.hideSoftKeyboard(this);
+                callWeatherApi();
+                return true;
+            }
+            return false;
+        });
     }
 
     private void search() {
         b.fabSearch.setOnClickListener(v -> {
             if (!TextUtils.isEmpty(b.txtCiudad.getText().toString())) {
-                viewModel.callWeatherApi(b.txtCiudad.getText().toString(), b.lblValorAmanecer);
-                observeLiveData();
+                callWeatherApi();
             } else {
                 Event<Snackbar> snackBarEvent = new Event<>
                         (Snackbar.make(b.lblValorAmanecer, getString(R.string.empty_snack_value), Snackbar.LENGTH_SHORT));
@@ -88,5 +97,10 @@ public class MainActivity extends AppCompatActivity {
         Picasso.with(b.imgValorTiempoIcono.getContext()).load(c.getLogo())
                 .resize(getResources().getInteger(R.integer.iconApiSize),
                         getResources().getInteger(R.integer.iconApiSize)).into(b.imgValorTiempoIcono);
+    }
+
+    private void callWeatherApi() {
+        viewModel.callWeatherApi(b.txtCiudad.getText().toString(), b.lblValorAmanecer);
+        observeLiveData();
     }
 }

@@ -53,7 +53,7 @@ class MainActivityViewModel extends ViewModel {
                     String tempMax = String.valueOf(response.body().getMain().getTempMax());
                     String tempMedia = String.valueOf(response.body().getMain().getTemp());
                     String windSpeed = String.valueOf(response.body().getWind().getSpeed());
-                    String windDegrees = String.valueOf(response.body().getWind().getDeg());
+                    String windDegrees = response.body().getWind().getDeg() == null ? "-" : String.valueOf(response.body().getWind().getDeg());
                     String humidity = String.valueOf(response.body().getMain().getHumidity());
                     String cloudAll = String.valueOf(response.body().getClouds().getAll());
                     String logo = response.body().getWeather().get(0).getIcon();
